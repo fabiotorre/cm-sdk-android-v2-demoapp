@@ -1,6 +1,6 @@
 # consentmanager CMP SDK v2 DemoApp
 
-A demo application showcasing the integration and functionality of the consentmanager CMP (Consent Management Platform) SDK v2 for Android. This app demonstrates how to implement and interact with various consent management features.
+Two demo applications, on in Java and one in Kotlin, showcasing the integration and functionality of the consentmanager CMP (Consent Management Platform) SDK v2 for Android. This app demonstrates how to implement and interact with various consent management features.
 
 For more information about the Consentmanager CMP SDK, visit [consentmanager.net](https://consentmanager.net) and our [help documentation](https://help.consentmanager.net/books/cmp/chapter/integration-into-your-app).
 

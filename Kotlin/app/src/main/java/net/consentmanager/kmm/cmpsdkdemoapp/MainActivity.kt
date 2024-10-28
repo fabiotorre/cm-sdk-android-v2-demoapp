@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
 
         val config = CmpConfig.apply {
-            id = "Your Code-ID goes here" // TODO replace with your own Code-ID from your CMP
+            id = "52801" // TODO replace with your own Code-ID from your CMP
             domain = "delivery.consentmanager.net"
             language = "DE"
             appName = "CMDemoAppSDKv2Kotlin"

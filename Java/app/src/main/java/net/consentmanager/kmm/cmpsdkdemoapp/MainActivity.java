@@ -1,102 +1,64 @@
 package net.consentmanager.kmm.cmpsdkdemoapp;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 
-import net.consentmanager.cm_sdk_android_v3.CMPManagerDelegate;
-import net.consentmanager.cm_sdk_android_v3.ConsentLayerUIConfig;
-import net.consentmanager.cm_sdk_android_v3.UrlConfig;
-import net.consentmanager.java.JavaCMPManager;
+import net.consentmanager.sdk.CmpManager;
+import net.consentmanager.sdk.common.CmpError;
+import net.consentmanager.sdk.common.callbacks.CmpLayerAppEventListenerInterface;
+import net.consentmanager.sdk.consentlayer.model.CmpConfig;
+import net.consentmanager.sdk.consentlayer.model.CmpUIConfig;
+import net.consentmanager.sdk.consentlayer.model.CmpUIStrategy;
 
-import kotlinx.serialization.json.JsonObject;
-
-import android.webkit.WebView;
-import android.widget.FrameLayout;
-
-public class MainActivity extends ComponentActivity implements CMPManagerDelegate {
-
-    private JavaCMPManager cmpManager;
+public class MainActivity extends ComponentActivity implements CmpLayerAppEventListenerInterface {
+    private CmpManager cmpManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        WebView webView = new WebView(this);
-        FrameLayout layout = new FrameLayout(this);
-        layout.addView(webView);
-        setContentView(layout);
+        // Configure CMP
+        CmpConfig.INSTANCE.setId("955672ddd690"); // TODO: Replace with your Code-ID
+        CmpConfig.INSTANCE.setDomain("delivery.consentmanager.net");
+        CmpConfig.INSTANCE.setLanguage("DE");
+        CmpConfig.INSTANCE.setAppName("CMDemoAppSDKv2Java");
 
-        initializeCMPManager();
-    }
+        // Set UI Strategy
+        CmpUIConfig.INSTANCE.setUiStrategy(CmpUIStrategy.POPUP);
 
-    private void initializeCMPManager() {
-        UrlConfig urlConfig = new UrlConfig(
-                "09cb5dca91e6b",
-                "delivery.consentmanager.net",
-                "EN",
-                "CMDemoAppJava"
-        );
+        setContentView(new View(this));
 
-        ConsentLayerUIConfig webViewConfig = new ConsentLayerUIConfig(
-                ConsentLayerUIConfig.Position.FULL_SCREEN,
-                ConsentLayerUIConfig.BackgroundStyle.dimmed(Color.BLACK, 0.5f),
-                10f,
-                true,
-                false
-        );
+        // Initialize CMP Manager
+        cmpManager = CMPManagerSingleton.initialize(this, CmpConfig.INSTANCE, this);
 
-        WebView webView = new WebView(this);
-        cmpManager = JavaCMPManager.getInstance(this, urlConfig, webViewConfig, this);
-        cmpManager.setActivity(this);
-        cmpManager.setWebView(webView);
-
-        cmpManager.checkWithServerAndOpenIfNecessary(result -> {
-            if (result.isSuccess()) {
-                Log.d("JavaDemoApp", "CMP Initialized successfully");
-            } else {
-                Log.e("JavaDemoApp", "Initialize method failed with error: " + result.exceptionOrNull());
-            }
-            return null;
-        });
+        setContentView(R.layout.activity_cmp_demo);
+        showCMPDemoScreen();
     }
 
     private void showCMPDemoScreen() {
         Intent intent = new Intent(this, CMPDemoActivity.class);
         startActivity(intent);
-        finish();
+        //finish(); // Uncomment if you want to close MainActivity
     }
 
     @Override
-    public void didShowConsentLayer() {
-        Log.d("CMP JavaDemoApp", "Consent Layer open message received.");
+    public void onOpenRequest() {
+        Log.d("CMPLayer", "onOpenRequest");
     }
 
     @Override
-    public void didCloseConsentLayer() {
-        Log.d("CMP JavaDemoApp", "Consent Layer close message received.");
+    public void onCloseRequest() {
+        Log.d("CMPLayer", "onCloseRequest");
     }
 
     @Override
-    public void didReceiveError(@NonNull String error) {
-        Log.e("CMP JavaDemoApp", "SDK error: " + error);
-    }
-
-    @Override
-    public void didReceiveConsent(@NonNull String consent, @NonNull JsonObject jsonObject) {
-        Log.d("CMP JavaDemoApp", "Consent received: " + consent);
-        runOnUiThread(this::showCMPDemoScreen);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (cmpManager != null) {
-            cmpManager.onActivityDestroyed();
-        }
+    public void onError(@NonNull CmpError error, @NonNull String message) {
+        // Handle error event
+        Log.e("CMPLayer", "Error: " + error + ", Message: " + message);
     }
 }

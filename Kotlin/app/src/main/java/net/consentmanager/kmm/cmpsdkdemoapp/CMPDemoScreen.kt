@@ -1,5 +1,9 @@
 package net.consentmanager.kmm.cmpsdkdemoapp
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.preference.PreferenceManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -231,6 +235,25 @@ fun CMPDemoScreen(cmpManager: CmpManager) {
                             toastMessage = if (success) "Imported successfully" else "Import failed: $message"
                         }
                     )
+                }
+            )
+
+            DemoButton(
+                text = "Export TCF Strings to Clipboard",
+                onClick = {
+                    val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+                    val allEntries = preferences.all.entries.joinToString("\n") { (key, value) ->
+                        "$key: $value"
+                    }
+
+                    try {
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText("TCF Strings", allEntries)
+                        clipboard.setPrimaryClip(clip)
+                        toastMessage = "TCF strings exported to clipboard"
+                    } catch (e: Exception) {
+                        toastMessage = "Failed to copy to clipboard: ${e.message}"
+                    }
                 }
             )
         }

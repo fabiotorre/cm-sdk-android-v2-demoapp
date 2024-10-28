@@ -137,5 +137,16 @@
             android:layout_height="wrap_content"
             android:text="Open Consent Layer" />
 
+        <Button
+            android:id="@+id/btnImportCmpString"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Import CMP String" />
+
+        <Button
+            android:id="@+id/btnExportTcfStrings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Export TCF Strings" />
     </LinearLayout>
 </ScrollView>
